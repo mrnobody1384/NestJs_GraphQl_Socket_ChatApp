@@ -1,0 +1,48 @@
+
+services:
+  backend:
+    container_name: chatApp_backend
+    build:
+      context: ./backend/
+    ports:
+      - "3000:3000"
+    networks:
+      - ChatApp
+    command: ["pnpm", "run", "start"]
+          
+  frontend:
+    container_name: chatApp_frontend
+    build:
+      context: ./frontend/
+
+    ports:
+      - "5173:5173"
+    networks:
+      - ChatApp
+    command: ["pnpm", "run", "dev"]
+
+  db:
+    image: postgres:latest
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Aa123456
+      POSTGRES_DB: chatapp
+    ports:
+      - "5432:5432"
+    networks:
+      - ChatApp
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    networks:
+      - ChatApp
+
+networks:
+  ChatApp:
+
+volumes:
+  postgres_data:

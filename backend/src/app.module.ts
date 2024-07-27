@@ -10,11 +10,13 @@ import { GraphQLModule } from '@nestjs/graphql';
 import {ApolloDriver } from '@nestjs/apollo'
 import { join } from 'path';
 import {ConfigModule,ConfigService} from '@nestjs/config'
+import { JwtModule, JwtService } from '@nestjs/jwt';
+import { PrismaModule } from './prisma/prisma.module';
 
 
 
 @Module({
-  imports: [AuthModule, UserModule,
+  imports: [AuthModule, UserModule,UserModule,
     GraphQLModule.forRootAsync({
       imports: [ConfigModule,AppModule],
       inject: [ConfigService],
@@ -27,6 +29,7 @@ import {ConfigModule,ConfigService} from '@nestjs/config'
           playground:true,
           autoSchemaFile: join(process.cwd(),'src/schema.gql'),
           sortSchema: true,
+          context:({ req, res }) => ({ req, res })
 
         }
 
@@ -36,10 +39,10 @@ import {ConfigModule,ConfigService} from '@nestjs/config'
     ConfigModule.forRoot(
       {
         isGlobal: true,
-
+        envFilePath: `./../.env`,
       }
     )
-
+, PrismaModule
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],

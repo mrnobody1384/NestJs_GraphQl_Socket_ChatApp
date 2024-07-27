@@ -21,21 +21,24 @@ async function bootstrap() {
     ]
   })
 
-  app.use(cookieParser())
+
   app.use(graphqlUploadExpress({maxFileSize: 1000000000,maxFiles:1}))
 
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true,
+dismissDefaultMessages: true,
     transform:true,
-    exceptionFactory :(error)=>{
-      const formattedErrors = error.reduce((accumulator,error)=>{
+    exceptionFactory :(errors)=>{
+      const formattedErrors = errors.reduce((accumulator,error)=>{
+        console.log(error)
         accumulator[error.property]= Object.values(error.constraints).join(', ');
         return accumulator
       },{})
-
-      throw new BadRequestException(formattedErrors)
+      console.log(formattedErrors)
+      throw new BadRequestException(JSON.stringify(formattedErrors))
     }
   }))
+  app.use(cookieParser())
   await app.listen(3000);
 }
 bootstrap();
